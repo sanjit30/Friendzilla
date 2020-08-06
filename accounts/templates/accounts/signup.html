@@ -1,0 +1,43 @@
+{% load bootstrap %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <br>
+    <br>
+
+    <div class="container">
+      <h1>Welcome to Friendzilla!</h1>
+      <br>
+      <br>
+      <h1>Signup!</h1>
+      <form  method="post">
+            {% csrf_token %}
+            {{form|bootstrap }}
+            <input type="submit" class='btn btn-primary'  value="Signup">
+      </form>
+      <br>
+      <p>Already have an account?</p>
+      <a class='btn btn-primary' href="{% url 'accounts:login' %}">Sign in</a>
+      <br>
+      <br>
+
+  </body>
+
+</html>
+
+<style >
+  body{
+     background: url("/static/images/bg.jpg") 50% 0 no-repeat fixed;
+     color: white;
+    height: 650px;
+    padding: 100px 0 0 0;
+  }
+</style>

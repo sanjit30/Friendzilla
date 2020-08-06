@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+
+    <script src="{% static 'js/jquery-3.5.1.js' %}"></script> <!-- JQUERY HERE -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    {% block head %}
+    {% endblock %}
+  </head>
+  <div class="container-fluid">
+    <body>
+      <div class="">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+          <a class="navbar-brand" href="{% url 'home:feed' %}">Friendzilla</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <form class="form-inline my-2 my-lg-0" action="{% url 'accounts:search_users' %}" method="get">
+
+            <input name='query' class="form-control mr-sm-2" type="text" placeholder="Search Users" aria-label="Search">
+            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+
+          </form>
+
+
+            <ul class="navbar-nav  ml-auto">
+
+              {% if user.is_authenticated %}
+
+              <ul class="navbar-nav ml-auto nav-flex-icons">
+                <li class="nav-item avatar dropdown">
+                  {%if user.profile.profile_picture %}
+                  <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img class="md-avatar rounded" src="{{user.profile.profile_picture.url}}" alt="">
+                  </a>
+                  {% else %}
+                  <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img class="md-avatar rounded" src="{% static 'images/default-avatar-2.jpeg' %}" alt="">
+                  </a>
+                  {% endif %}
+                  <div class="dropdown-menu dropdown-menu-right dropdown-secondary" aria-labelledby="dropdownMenuLink">
+                    <p class="dropdown-item">Signed in as <b>{{user.username}}</b></p>
+                    <a class="dropdown-item" href="{% url 'accounts:profile' user.username %}">Profile</a>
+                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a>
+
+                  </div>
+                </li>
+
+              </ul>
+              <style media="screen">
+                .md-avatar {
+                  vertical-align: middle;
+                  width: 30px;
+                  height: auto;
+                }
+
+                .dropdown-item:hover {
+                  background-color: #FF00FF !important;
+                  color: white;
+                }
+              </style>
+
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'accounts:signup' %}">Signup</a>
+              </li>
+              {% endif %}
+            </ul>
+
+          </div>
+        </nav>
+      </div>
+      <div>
+        {% block content%}
+        {% endblock %}
+      </div>
+
+
+
+    </body>
+  </div>
+
+
+</html>

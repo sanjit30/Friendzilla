@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="container-fluid">
+  <div class="container" id ="profile_head">
+    <header>
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-md-12 col-sm-12">
+            {% if u.profile.profile_picture %}
+            <img src="{{u.profile.profile_picture.url}}" class="img-responsive img-circle tm-border" alt="">
+            {% else %}
+            <img src="{% static 'images/default-avatar-2.jpeg' %}" alt="">
+            {% endif %}
+
+
+    			</div>
+    		</div>
+    	</div>
+    </header>
+    </div>
+    <br>
+
+  	{% if request.user == u %}
+      <a href="{% url 'accounts:update_profile' %}">Update Profile</a>
+      <p class="tm-title bold shadow">UserName:{{u.username}}</p>
+      <p>Name :{{u.first_name}} {{u.last_name}}</p>
+      <p>Country:{{u.profile.location}}</p>
+      <p>Work:{{u.profile.work}}</p>
+      <p>College:{{u.profile.education}}</p>
+      <p>Skills:{{u.profile.skills}}</p>
+  		<h1>Friends</h1>
+
+  		{% for friend in friends_list %}
+  			<a href="{% url 'accounts:profile' friend.user.username %}">{{ friend.user.username }}</a>
+  		{% endfor %}
+  		<hr>
+  		<h2>Sent Friend requests</h2>
+  		<ul>
+  		{% for s_request in sent_friend_requests %}
+  			<li>{{ s_request.to_user.username }}</li>
+  		{% endfor %}
+  		</ul>
+  		<hr>
+  		<h2>Received Friend requests</h2>
+      <div class="friend-requests">
+        {% for r_request in rec_friend_requests %}
+    			<p><a href="{{ r_request.from_user.profile.get_absolute_url }}">{{ r_request.from_user.username }}</a></p>
+    			<small><a class='btn btn-primary' href="{% url 'accounts:accept_friend_request' r_request.from_user %}">Accept</a></small>
+    			<small><a class='btn btn-warning' href="{% url 'accounts:delete_friend_request' r_request.from_user %}">Ignore</a></small>
+    		{% endfor %}
+      </div>
+
+
+
+  	{% else %}
+      <p>Name :{{u.first_name}} {{u.last_name}}</p>
+      <p>Country:{{u.profile.country}}</p>
+      <p>Work:{{u.profile.work}}</p>
+      <p>College:{{u.profile.college}}</p>
+      <p>Skills:{{u.profile.skills}}</p>
+
+      <div class="friend-status">
+        </div>
+</div>
+
+	{% endif %}
+  <script>
+    $(document).ready(function(){
+
+        var status_update = function(){
+          $.ajax({
+            type:'GET',
+        		url :  "{% url 'accounts:friend_status' %}",
+        		data : {
+              'username':'{{u.username}}'
+            },
+            dataType:'json',
+        		success : function(data){
+  			        let friend_status = data.friend_status
+
+                if(friend_status=='not_friend')
+                {
+                  $(".friend-status").html("<a id='add-friend' class='btn btn-primary' >Add Friend</a>")
+                }
+                else if(friend_status=='friend'){
+                  $(".friend-status").html("<a id='remove-friend' class='btn btn-primary'>Remove Friend</a>")
+                }
+                else{
+                  $(".friend-status").html("<a id='cancel-request' class='btn btn-warning'>Cancel Request</a>")
+                }
+
+              }
+        	});
+
+
+        }
+        status_update();
+
+        var add_friend = function(){
+          $.ajax({
+            type:'GET',
+        		url :  "{% url 'accounts:send_friend_request' %}",
+        		data : {
+              'username':'{{u.username}}'
+            },
+            dataType:'json',
+        		success : function(data){
+  			        if(data.success){
+                      status_update();
+                    }
+                    else {
+                      console.log('error')
+                    }
+                  }
+        	});
+
+        }
+        var cancel_request = function(){
+          $.ajax({
+            type:'GET',
+        		url :  "{% url 'accounts:cancel_friend_request' %}",
+        		data : {
+              'username':'{{u.username}}'
+            },
+            dataType:'json',
+        		success : function(data){
+  			        if(data.success){
+                      status_update();
+                    }
+                    else {
+                      console.log('error')
+                    }
+                  }
+        	});
+        }
+        var remove_friend = function(){
+          $.ajax({
+            type:'GET',
+        		url :  "{% url 'accounts:remove_friend' %}",
+        		data : {
+              'username':'{{u.username}}'
+            },
+            dataType:'json',
+        		success : function(data){
+  			        if(data.success){
+                      status_update();
+                    }
+                    else {
+                      console.log('error')
+                    }
+                  }
+        	});
+
+        }
+        $(".friend-status").on("click",'#add-friend',function(){
+          add_friend();
+        })
+        $(".friend-status").on("click",'#cancel-request',function(){
+          cancel_request();
+        })
+        $(".friend-status").on("click",'#remove-friend',function(){
+          remove_friend();
+        })
+
+   });
+
+  </script>
+
+
+<style >
+  img{
+    max-height: 200px;
+    max-width: 100%;
+  }
+  #profile_head{
+    text-align: center;
+  }
+
+</style>
+
+{% endblock %}
